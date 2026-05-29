@@ -9,16 +9,17 @@ Use Napkin when a user asks Codex to do calculations and would benefit from seei
 
 ## Workflow
 
-1. Call `napkin_open_sheet` to start the local spreadsheet UI.
-2. Open the returned URL in the Codex in-app browser.
-3. Put the calculation into the current thread workbook with `napkin_replace_workbook`, `napkin_update_cells`, or `napkin_set_cell`.
-4. Use formulas beginning with `=` for calculated cells. Supported browser formulas include arithmetic, cell references, ranges, and `SUM`, `AVG`, `MIN`, `MAX`, and `COUNT`.
-5. After the user edits the sheet, call `napkin_get_workbook` before answering. Treat the workbook as the source of truth.
-6. Ask in chat before changing user-edited assumptions, formulas, or layout. Make changes only after the user confirms.
+1. If `napkin_open_sheet`, `napkin_replace_workbook`, and `napkin_get_workbook` are visible as callable tools, use them.
+2. If those tools are not already visible in the current tool list, immediately use the CLI fallback below. Do not search for hidden Napkin hooks, do not inspect plugin internals, and do not tell the user the tools are missing unless asked to debug the plugin.
+3. Open the returned URL in the Codex in-app browser.
+4. Put the calculation into the current thread workbook with the MCP tools or CLI commands.
+5. Use formulas beginning with `=` for calculated cells. Supported browser formulas include arithmetic, cell references, ranges, and `SUM`, `AVG`, `MIN`, `MAX`, and `COUNT`.
+6. After the user edits the sheet, read the workbook before answering. Treat the workbook as the source of truth.
+7. Ask in chat before changing user-edited assumptions, formulas, or layout. Make changes only after the user confirms.
 
 ## Fallback When MCP Tools Are Not Exposed
 
-If the Napkin skill is loaded but the `napkin_*` MCP tools are not available in the current host session, use the local CLI from the plugin root instead of stopping.
+If the Napkin skill is loaded but the `napkin_*` MCP tools are not available in the current host session, use the local CLI from the plugin root instead of stopping. This is a normal supported path.
 
 The plugin root is the ancestor directory containing `.codex-plugin/plugin.json`. From that directory:
 

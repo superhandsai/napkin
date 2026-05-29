@@ -1,6 +1,6 @@
 {
   "name": "napkin",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A Codex-native editable spreadsheet surface for thread-scoped calculations.",
   "author": {
     "name": "Grant Mac"
