@@ -1,21 +1,21 @@
 # Napkin
 
-Napkin is a Codex plugin marketplace containing a local spreadsheet plugin for showing calculations in an editable sheet.
+Napkin is a Codex plugin marketplace containing a local burn-rate calculator and editable spreadsheet.
 
 It has two integration points:
 
-- A browser UI served at `http://localhost:4173`.
+- A browser UI served at `http://localhost:4173` with runway summary cards, a cash chart, and an editable sheet.
 - An MCP server at `plugins/napkin/scripts/napkin-mcp.mjs` with tools for opening the UI and reading or writing the active thread workbook.
 
 Workbooks are stored under `~/.codex/napkin/workbooks/`. By default Napkin keys them by the current Codex thread or session id, so each thread gets its own sheet while Codex and the browser still operate on the same file.
 
 ## Intended Behavior
 
-- Use Napkin automatically when a Codex answer requires non-trivial calculations or tabular numeric analysis.
+- Use Napkin automatically when a Codex answer requires burn-rate modeling, runway forecasting, non-trivial calculations, or tabular numeric analysis.
 - Treat the spreadsheet as the source of truth after the user edits cells.
 - Re-read the workbook with `napkin_get_workbook` before answering after browser edits.
 - Ask in chat before changing user-edited assumptions, formulas, or layout.
-- Keep v0 lightweight: one sheet, one browser tab, basic formulas.
+- Keep the app lightweight: one sheet, one browser tab, basic formulas.
 
 ## Installing From GitHub
 
@@ -52,7 +52,7 @@ codex mcp get napkin
 You should see `enabled: true` with a `cwd` inside the installed plugin cache. Then smoke-test the server:
 
 ```bash
-cd ~/.codex/plugins/cache/napkin-marketplace/napkin/0.1.3
+cd ~/.codex/plugins/cache/napkin-marketplace/napkin/0.2.1
 node -e 'const msg=JSON.stringify({jsonrpc:"2.0",id:1,method:"tools/list",params:{}}); process.stdout.write(`Content-Length: ${Buffer.byteLength(msg)}\r\n\r\n${msg}`)' | node scripts/napkin-mcp.mjs
 ```
 
@@ -61,7 +61,7 @@ If that returns the `napkin_*` tools, the MCP server is healthy. Start a new Cod
 If the skill loads but the MCP tools are still not exposed in a running session, use the CLI fallback from the installed plugin root:
 
 ```bash
-cd ~/.codex/plugins/cache/napkin-marketplace/napkin/0.1.3
+cd ~/.codex/plugins/cache/napkin-marketplace/napkin/0.2.1
 node scripts/napkin-cli.mjs open '{"workbookId":"manual-test"}'
 node scripts/napkin-cli.mjs replace '{"workbookId":"manual-test","title":"Manual Test","cells":[["Item","Amount"],["Base","10"],["Double","=B2*2"]]}'
 node scripts/napkin-cli.mjs get '{"workbookId":"manual-test"}'

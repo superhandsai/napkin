@@ -6,6 +6,13 @@ const cellNameEl = document.querySelector("#cellName");
 const addRowButton = document.querySelector("#addRowButton");
 const addColumnButton = document.querySelector("#addColumnButton");
 const refreshButton = document.querySelector("#refreshButton");
+const scenarioSelect = document.querySelector("#scenarioSelect");
+const currentCashEl = document.querySelector("#currentCash");
+const averageBurnEl = document.querySelector("#averageBurn");
+const runwayMonthsEl = document.querySelector("#runwayMonths");
+const cashOutDateEl = document.querySelector("#cashOutDate");
+const runwayChart = document.querySelector("#runwayChart");
+const chartCaption = document.querySelector("#chartCaption");
 const params = new URLSearchParams(window.location.search);
 const workbookId = params.get("workbook") || "default";
 const workbookApi = `/api/workbook?workbook=${encodeURIComponent(workbookId)}`;
@@ -27,7 +34,7 @@ function normalizeWorkbook(nextWorkbook) {
   const cols = Math.max(1, Number(nextWorkbook.cols) || 10);
   workbook = {
     version: 1,
-    title: nextWorkbook.title || "Codex Calculation Sheet",
+    title: nextWorkbook.title || "Burn Rate Calculator",
     rows,
     cols,
     cells: [],
@@ -74,6 +81,20 @@ function asNumber(value) {
   if (typeof value === "number" && Number.isFinite(value)) return value;
   const parsed = Number(String(value).replace(/,/g, ""));
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatCurrency(value) {
+  if (!Number.isFinite(value)) return "-";
+  const sign = value < 0 ? "-" : "";
+  const absolute = Math.abs(value);
+  if (absolute >= 1000000) return `${sign}$${(absolute / 1000000).toFixed(1)}M`;
+  if (absolute >= 1000) return `${sign}$${Math.round(absolute / 1000)}k`;
+  return `${sign}$${Math.round(absolute).toLocaleString()}`;
+}
+
+function formatMonthCount(value) {
+  if (!Number.isFinite(value) || value < 0) return "-";
+  return `${value.toFixed(value >= 10 ? 0 : 1)} mo`;
 }
 
 function rangeValues(range, stack) {
@@ -179,6 +200,7 @@ function commitCell(row, col, value) {
 
 function render() {
   titleInput.value = workbook.title;
+  syncScenarioControl();
   const headCells = Array.from({ length: workbook.cols }, (_, col) => `<th class="col-head">${columnName(col)}</th>`).join("");
   const bodyRows = Array.from({ length: workbook.rows }, (_, row) => {
     const cells = Array.from({ length: workbook.cols }, (_, col) => {
@@ -196,6 +218,128 @@ function render() {
     return `<tr><th class="row-head">${row + 1}</th>${cells}</tr>`;
   }).join("");
   sheet.innerHTML = `<thead><tr><th class="corner"></th>${headCells}</tr></thead><tbody>${bodyRows}</tbody>`;
+  renderInsights();
+}
+
+function syncScenarioControl() {
+  const scenarioRow = findRow("Scenario");
+  const scenario = scenarioRow >= 0 ? workbook.cells[scenarioRow]?.[1] : "";
+  if (scenario && [...scenarioSelect.options].some((option) => option.value === scenario)) {
+    scenarioSelect.value = scenario;
+  }
+}
+
+function findRow(label) {
+  const normalized = label.toLowerCase();
+  return workbook.cells.findIndex((row) => String(row?.[0] || "").trim().toLowerCase() === normalized);
+}
+
+function getResolvedNumber(row, col) {
+  if (row < 0 || col < 0 || row >= workbook.rows || col >= workbook.cols) return 0;
+  try {
+    return asNumber(resolveCell(row, col));
+  } catch {
+    return 0;
+  }
+}
+
+function getBurnModel() {
+  const monthLabels = workbook.cells[0]?.slice(1).map((month) => String(month || "").trim()) || [];
+  const months = monthLabels.map((label, index) => ({ label, col: index + 1 })).filter((month) => month.label);
+  const startingRow = findRow("Starting cash");
+  const cashInRow = findRow("Cash in");
+  const cashOutRow = findRow("Total cash out");
+  const netBurnRow = findRow("Net burn");
+  const endingCashRow = findRow("Ending cash");
+  const targetRow = findRow("Target minimum cash");
+  const targetCash = getResolvedNumber(targetRow, 1);
+
+  const values = months.map((month) => ({
+    ...month,
+    startingCash: getResolvedNumber(startingRow, month.col),
+    cashIn: getResolvedNumber(cashInRow, month.col),
+    cashOut: getResolvedNumber(cashOutRow, month.col),
+    netBurn: getResolvedNumber(netBurnRow, month.col),
+    endingCash: getResolvedNumber(endingCashRow, month.col)
+  }));
+
+  return { months: values, targetCash };
+}
+
+function renderInsights() {
+  if (!workbook) return;
+  const { months, targetCash } = getBurnModel();
+  if (!months.length) {
+    currentCashEl.textContent = "-";
+    averageBurnEl.textContent = "-";
+    runwayMonthsEl.textContent = "-";
+    cashOutDateEl.textContent = "-";
+    runwayChart.innerHTML = "";
+    return;
+  }
+
+  const firstMonth = months[0];
+  const positiveBurn = months.map((month) => month.netBurn).filter((value) => value > 0);
+  const averageBurn = positiveBurn.length ? positiveBurn.reduce((total, value) => total + value, 0) / positiveBurn.length : 0;
+  const runway = averageBurn > 0 ? firstMonth.startingCash / averageBurn : Number.POSITIVE_INFINITY;
+  const belowTarget = months.find((month) => month.endingCash <= targetCash);
+  const finalCash = months[months.length - 1].endingCash;
+
+  currentCashEl.textContent = formatCurrency(firstMonth.startingCash);
+  averageBurnEl.textContent = averageBurn > 0 ? formatCurrency(averageBurn) : "$0";
+  runwayMonthsEl.textContent = Number.isFinite(runway) ? formatMonthCount(runway) : "Infinite";
+  cashOutDateEl.textContent = belowTarget ? belowTarget.label : "Beyond plan";
+  chartCaption.textContent = `${months.length}-month forecast. Ending cash: ${formatCurrency(finalCash)}. Target floor: ${formatCurrency(targetCash)}.`;
+  runwayChart.innerHTML = buildRunwayChart(months, targetCash);
+}
+
+function buildRunwayChart(months, targetCash) {
+  const width = 960;
+  const height = 260;
+  const padding = { top: 18, right: 24, bottom: 42, left: 58 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+  const values = months.map((month) => month.endingCash);
+  const minValue = Math.min(0, targetCash, ...values);
+  const maxValue = Math.max(targetCash, ...values);
+  const spread = maxValue - minValue || 1;
+  const xFor = (index) => padding.left + (months.length === 1 ? chartWidth / 2 : (index / (months.length - 1)) * chartWidth);
+  const yFor = (value) => padding.top + (1 - (value - minValue) / spread) * chartHeight;
+  const path = months.map((month, index) => `${index === 0 ? "M" : "L"} ${xFor(index).toFixed(1)} ${yFor(month.endingCash).toFixed(1)}`).join(" ");
+  const areaPath = `${path} L ${xFor(months.length - 1).toFixed(1)} ${height - padding.bottom} L ${xFor(0).toFixed(1)} ${height - padding.bottom} Z`;
+  const targetY = yFor(targetCash);
+  const gridLines = Array.from({ length: 5 }, (_, index) => {
+    const y = padding.top + (index / 4) * chartHeight;
+    const value = maxValue - (index / 4) * spread;
+    return `<line x1="${padding.left}" y1="${y.toFixed(1)}" x2="${width - padding.right}" y2="${y.toFixed(1)}" class="grid-line"></line>
+      <text x="${padding.left - 10}" y="${(y + 4).toFixed(1)}" class="axis-label" text-anchor="end">${formatCurrency(value)}</text>`;
+  }).join("");
+  const monthTicks = months.map((month, index) => {
+    if (index !== 0 && index !== months.length - 1 && index % Math.ceil(months.length / 5) !== 0) return "";
+    return `<text x="${xFor(index).toFixed(1)}" y="${height - 14}" class="axis-label" text-anchor="middle">${escapeHtml(month.label)}</text>`;
+  }).join("");
+  const points = months.map((month, index) =>
+    `<circle cx="${xFor(index).toFixed(1)}" cy="${yFor(month.endingCash).toFixed(1)}" r="3.5" class="cash-point">
+      <title>${escapeHtml(month.label)}: ${formatCurrency(month.endingCash)}</title>
+    </circle>`
+  ).join("");
+
+  return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Ending cash runway forecast">
+    <style>
+      .grid-line { stroke: #d8dee4; stroke-dasharray: 3 5; }
+      .axis-label { fill: #65727e; font: 12px system-ui, sans-serif; }
+      .target-line { stroke: #7a8793; stroke-width: 2; stroke-dasharray: 7 6; }
+      .cash-area { fill: rgba(29, 127, 194, 0.12); }
+      .cash-line { fill: none; stroke: #1d7fc2; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+      .cash-point { fill: #ffffff; stroke: #1d7fc2; stroke-width: 2; }
+    </style>
+    ${gridLines}
+    <path d="${areaPath}" class="cash-area"></path>
+    <line x1="${padding.left}" y1="${targetY.toFixed(1)}" x2="${width - padding.right}" y2="${targetY.toFixed(1)}" class="target-line"></line>
+    <path d="${path}" class="cash-line"></path>
+    ${points}
+    ${monthTicks}
+  </svg>`;
 }
 
 function escapeHtml(value) {
@@ -275,6 +419,13 @@ titleInput.addEventListener("input", () => {
   workbook.title = titleInput.value;
   isDirty = true;
   queueSave();
+});
+
+scenarioSelect.addEventListener("change", () => {
+  const scenarioRow = findRow("Scenario");
+  if (scenarioRow >= 0 && workbook.cols > 1) {
+    commitCell(scenarioRow, 1, scenarioSelect.value);
+  }
 });
 
 addRowButton.addEventListener("click", () => {

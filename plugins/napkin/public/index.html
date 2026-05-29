@@ -13,6 +13,11 @@
         <div id="status" class="status">Loading</div>
       </div>
       <div class="actions" aria-label="Workbook actions">
+        <select id="scenarioSelect" class="scenario-select" aria-label="Scenario">
+          <option>Base</option>
+          <option>Conservative</option>
+          <option>Aggressive</option>
+        </select>
         <button id="addRowButton" type="button">+ Row</button>
         <button id="addColumnButton" type="button">+ Column</button>
         <button id="refreshButton" type="button">Refresh</button>
@@ -20,6 +25,39 @@
     </header>
 
     <main class="workspace">
+      <section class="summary-grid" aria-label="Runway summary">
+        <article class="summary-card">
+          <span>Current cash</span>
+          <strong id="currentCash">-</strong>
+        </article>
+        <article class="summary-card">
+          <span>Avg net burn</span>
+          <strong id="averageBurn">-</strong>
+        </article>
+        <article class="summary-card">
+          <span>Runway</span>
+          <strong id="runwayMonths">-</strong>
+        </article>
+        <article class="summary-card">
+          <span>Cash below target</span>
+          <strong id="cashOutDate">-</strong>
+        </article>
+      </section>
+
+      <section class="chart-panel" aria-label="Cash runway chart">
+        <div class="chart-head">
+          <div>
+            <h2>Cash runway</h2>
+            <p id="chartCaption">Forecast based on monthly cash in and cash out.</p>
+          </div>
+          <div class="legend">
+            <span><i class="legend-cash"></i>Ending cash</span>
+            <span><i class="legend-target"></i>Target</span>
+          </div>
+        </div>
+        <div id="runwayChart" class="runway-chart"></div>
+      </section>
+
       <section class="formula-strip" aria-label="Selected cell">
         <span id="cellName" class="cell-name">A1</span>
         <input id="formulaInput" class="formula-input" aria-label="Cell value">

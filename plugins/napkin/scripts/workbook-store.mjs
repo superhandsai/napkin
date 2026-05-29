@@ -6,19 +6,28 @@ import { fileURLToPath } from "node:url";
 
 export const root = fileURLToPath(new URL("..", import.meta.url));
 export const dataDir = process.env.NAPKIN_DATA_DIR || join(homedir(), ".codex", "napkin");
+export const napkinVersion = "0.2.1";
 
 export const defaultWorkbook = {
   version: 1,
-  title: "Codex Calculation Sheet",
-  rows: 24,
-  cols: 10,
+  title: "Burn Rate Calculator",
+  rows: 14,
+  cols: 14,
   cells: [
-    ["Item", "Value", "Notes"],
-    ["Revenue", "12500", "", ""],
-    ["Costs", "7300", "", ""],
-    ["Profit", "=B2-B3", "", ""],
-    ["Margin", "=B4/B2", "", ""],
-    ["Check total", "=SUM(B2:B3)", "", ""]
+    ["Metric", "Jan 2026", "Feb 2026", "Mar 2026", "Apr 2026", "May 2026", "Jun 2026", "Jul 2026", "Aug 2026", "Sep 2026", "Oct 2026", "Nov 2026", "Dec 2026", "Jan 2027"],
+    ["Starting cash", "900000", "=B10", "=C10", "=D10", "=E10", "=F10", "=G10", "=H10", "=I10", "=J10", "=K10", "=L10", "=M10"],
+    ["Cash in", "28000", "32000", "35000", "38000", "41000", "45000", "47000", "52000", "56000", "61000", "66000", "72000", "78000"],
+    ["Payroll", "82000", "85000", "88000", "91000", "94000", "97000", "100000", "103000", "106000", "109000", "112000", "116000", "120000"],
+    ["Tools and infra", "14000", "14500", "15000", "15500", "16000", "16500", "17000", "17500", "18000", "18500", "19000", "19500", "20000"],
+    ["Marketing", "18000", "20000", "22000", "24000", "26000", "28000", "30000", "32000", "34000", "36000", "38000", "40000", "42000"],
+    ["Other OpEx", "12000", "12500", "13000", "13500", "14000", "14500", "15000", "15500", "16000", "16500", "17000", "17500", "18000"],
+    ["Total cash out", "=SUM(B4:B7)", "=SUM(C4:C7)", "=SUM(D4:D7)", "=SUM(E4:E7)", "=SUM(F4:F7)", "=SUM(G4:G7)", "=SUM(H4:H7)", "=SUM(I4:I7)", "=SUM(J4:J7)", "=SUM(K4:K7)", "=SUM(L4:L7)", "=SUM(M4:M7)", "=SUM(N4:N7)"],
+    ["Net burn", "=B8-B3", "=C8-C3", "=D8-D3", "=E8-E3", "=F8-F3", "=G8-G3", "=H8-H3", "=I8-I3", "=J8-J3", "=K8-K3", "=L8-L3", "=M8-M3", "=N8-N3"],
+    ["Ending cash", "=B2+B3-B8", "=C2+C3-C8", "=D2+D3-D8", "=E2+E3-E8", "=F2+F3-F8", "=G2+G3-G8", "=H2+H3-H8", "=I2+I3-I8", "=J2+J3-J8", "=K2+K3-K8", "=L2+L3-L8", "=M2+M3-M8", "=N2+N3-N8"],
+    ["Headcount", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"],
+    ["Notes", "Base plan", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Scenario", "Base", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Target minimum cash", "75000", "", "", "", "", "", "", "", "", "", "", "", ""]
   ],
   updatedAt: new Date().toISOString()
 };

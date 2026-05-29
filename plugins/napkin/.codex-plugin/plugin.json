@@ -1,7 +1,7 @@
 {
   "name": "napkin",
-  "version": "0.1.3",
-  "description": "A Codex-native editable spreadsheet surface for thread-scoped calculations.",
+  "version": "0.2.1",
+  "description": "A Codex-native burn-rate and runway calculator with an editable spreadsheet.",
   "author": {
     "name": "Grant Mac"
   },
@@ -16,8 +16,8 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Napkin",
-    "shortDescription": "Show Codex calculations in an editable sheet.",
-    "longDescription": "Napkin gives Codex a thread-scoped spreadsheet it can open in the in-app browser and read through MCP. It keeps lightweight calculations visible, treats user edits as the source of truth, and asks before changing edited cells.",
+    "shortDescription": "Model burn rate and runway in an editable sheet.",
+    "longDescription": "Napkin gives Codex a thread-scoped burn-rate calculator it can open in the in-app browser and read through MCP. It keeps monthly cash assumptions visible, treats user edits as the source of truth, and asks before changing edited cells.",
     "developerName": "Grant Mac",
     "category": "Productivity",
     "capabilities": [
@@ -25,9 +25,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Open a Napkin sheet for this calculation.",
-      "Read my sheet edits and update the calculations.",
-      "Put this analysis into an editable spreadsheet."
+      "Open a Napkin runway calculator.",
+      "Model my burn rate in a sheet.",
+      "Update the runway after my edits."
     ],
     "brandColor": "#176B5D"
   }

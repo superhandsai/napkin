@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ensureWorkbook, getDefaultWorkbookId, readWorkbook, workbookPathFor, writeWorkbook } from "./scripts/workbook-store.mjs";
+import { ensureWorkbook, getDefaultWorkbookId, napkinVersion, readWorkbook, workbookPathFor, writeWorkbook } from "./scripts/workbook-store.mjs";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const publicDir = join(root, "public");
@@ -48,6 +48,11 @@ async function serveStatic(pathname, response) {
 }
 
 async function handleApi(request, response, pathname) {
+  if (pathname === "/api/info") {
+    send(response, 200, JSON.stringify({ name: "napkin", version: napkinVersion }));
+    return;
+  }
+
   if (pathname !== "/api/workbook") {
     send(response, 404, JSON.stringify({ error: "Unknown API route" }));
     return;

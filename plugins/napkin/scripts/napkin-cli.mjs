@@ -7,6 +7,7 @@ import {
   defaultWorkbook,
   getDefaultWorkbookId,
   indexesToCellReference,
+  napkinVersion,
   readWorkbook,
   resetWorkbook,
   root,
@@ -65,7 +66,7 @@ async function readArgs() {
 }
 
 async function openSheet(args) {
-  const port = Number(args.port || process.env.NAPKIN_PORT || 4173);
+  const port = await resolvePort(Number(args.port || process.env.NAPKIN_PORT || 4173));
   const workbookId = getWorkbookId(args);
   const baseUrl = `http://localhost:${port}`;
   const url = `${baseUrl}?workbook=${encodeURIComponent(workbookId)}`;
@@ -90,6 +91,14 @@ async function openSheet(args) {
       reason: "Editable Napkin spreadsheet for the current calculation."
     }
   };
+}
+
+async function resolvePort(preferredPort) {
+  for (let port = preferredPort; port < preferredPort + 20; port += 1) {
+    const status = await getServerStatus(`http://localhost:${port}`);
+    if (status === "compatible" || status === "free") return port;
+  }
+  throw new Error(`No available Napkin port found starting at ${preferredPort}`);
 }
 
 async function getWorkbook(args) {
@@ -166,6 +175,17 @@ async function isReachable(url) {
     return response.ok;
   } catch {
     return false;
+  }
+}
+
+async function getServerStatus(baseUrl) {
+  try {
+    const response = await fetch(`${baseUrl}/api/info`);
+    if (!response.ok) return "occupied";
+    const info = await response.json();
+    return info.name === "napkin" && info.version === napkinVersion ? "compatible" : "occupied";
+  } catch {
+    return "free";
   }
 }
 

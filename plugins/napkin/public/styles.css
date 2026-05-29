@@ -1,14 +1,15 @@
 :root {
   color-scheme: light;
-  --bg: #f6f7f4;
+  --bg: #eef1f3;
   --panel: #ffffff;
-  --ink: #18201b;
-  --muted: #647067;
-  --line: #d8ded8;
-  --line-strong: #a9b3aa;
-  --accent: #176b5d;
-  --accent-soft: #dceee9;
-  --warn: #8a5a10;
+  --ink: #14202a;
+  --muted: #65727e;
+  --line: #d8dee4;
+  --line-strong: #aeb8c2;
+  --accent: #1d7fc2;
+  --accent-soft: #e1f0fb;
+  --target: #7a8793;
+  --warn: #9a620f;
   --error: #a83333;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -37,7 +38,8 @@ input {
   min-height: 76px;
   padding: 14px 18px;
   border-bottom: 1px solid var(--line);
-  background: var(--panel);
+  background: #14202a;
+  color: #f6fafc;
 }
 
 .title-input {
@@ -45,7 +47,7 @@ input {
   border: 0;
   outline: 0;
   background: transparent;
-  color: var(--ink);
+  color: #f6fafc;
   font-size: 22px;
   font-weight: 650;
 }
@@ -53,6 +55,7 @@ input {
 .status {
   min-height: 18px;
   color: var(--muted);
+  color: #a9b8c5;
   font-size: 12px;
 }
 
@@ -62,7 +65,18 @@ input {
 
 .actions {
   display: flex;
+  align-items: center;
   gap: 8px;
+}
+
+.scenario-select {
+  height: 34px;
+  min-width: 148px;
+  border: 1px solid #40505d;
+  border-radius: 6px;
+  background: #1b2a35;
+  color: #f6fafc;
+  padding: 0 10px;
 }
 
 button {
@@ -83,7 +97,101 @@ button:hover {
 .workspace {
   height: calc(100vh - 76px);
   display: grid;
+  grid-template-rows: auto minmax(220px, 30vh) auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 10px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.summary-card {
+  min-height: 86px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.summary-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.summary-card strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.chart-panel {
+  min-height: 220px;
+  display: grid;
   grid-template-rows: auto minmax(0, 1fr);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.chart-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.chart-head h2 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.chart-head p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.legend {
+  display: flex;
+  gap: 14px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.legend i {
+  display: inline-block;
+  width: 18px;
+  height: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.legend-cash {
+  background: var(--accent);
+}
+
+.legend-target {
+  background: var(--target);
+}
+
+.runway-chart {
+  min-height: 0;
+}
+
+.runway-chart svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .formula-strip {
@@ -91,7 +199,10 @@ button:hover {
   grid-template-columns: 72px minmax(0, 1fr);
   align-items: center;
   border-bottom: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-radius: 6px;
   background: #eef2ee;
+  overflow: hidden;
 }
 
 .cell-name {
@@ -119,6 +230,8 @@ button:hover {
 .sheet-wrap {
   overflow: auto;
   background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
 }
 
 .sheet {
@@ -160,12 +273,17 @@ button:hover {
 }
 
 .sheet .col-head {
-  width: 132px;
+  width: 118px;
 }
 
 .sheet td {
-  width: 132px;
+  width: 118px;
   background: var(--panel);
+}
+
+.sheet td:first-of-type {
+  width: 168px;
+  font-weight: 650;
 }
 
 .sheet td.selected {
@@ -194,4 +312,37 @@ button:hover {
 
 .cell-input:focus {
   box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+@media (max-width: 900px) {
+  body {
+    min-width: 360px;
+  }
+
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .title-input {
+    width: 100%;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+  }
+
+  .workspace {
+    height: auto;
+    min-height: calc(100vh - 76px);
+    grid-template-rows: auto 260px auto minmax(320px, 1fr);
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-card strong {
+    font-size: 20px;
+  }
 }
