@@ -1,11 +1,11 @@
 # Napkin
 
-Napkin is a Codex plugin prototype for showing calculations in an editable spreadsheet.
+Napkin is a Codex plugin marketplace containing a local spreadsheet plugin for showing calculations in an editable sheet.
 
 It has two integration points:
 
 - A browser UI served at `http://localhost:4173`.
-- An MCP server at `scripts/napkin-mcp.mjs` with tools for opening the UI and reading or writing the active thread workbook.
+- An MCP server at `plugins/napkin/scripts/napkin-mcp.mjs` with tools for opening the UI and reading or writing the active thread workbook.
 
 Workbooks are stored under `~/.codex/napkin/workbooks/`. By default Napkin keys them by the current Codex thread or session id, so each thread gets its own sheet while Codex and the browser still operate on the same file.
 
@@ -19,13 +19,14 @@ Workbooks are stored under `~/.codex/napkin/workbooks/`. By default Napkin keys 
 
 ## Installing From GitHub
 
-Publish this repository with `.codex-plugin/plugin.json`, `.mcp.json`, `skills/`, `scripts/`, and `public/` at the repo root. Users can then install it as a Codex plugin from the GitHub repository or from a marketplace entry that points at the repository.
+Publish this repository with `.agents/plugins/marketplace.json` at the repo root and the plugin under `plugins/napkin/`. Users can add the GitHub repository as a Codex marketplace, then install the Napkin plugin from that marketplace.
 
 The plugin does not require external services or package installation; it uses Node.js and local files only.
 
 ## Local Development
 
 ```bash
+cd plugins/napkin
 npm run dev
 ```
 

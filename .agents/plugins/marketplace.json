@@ -1,0 +1,20 @@
+{
+  "name": "napkin-marketplace",
+  "interface": {
+    "displayName": "Napkin"
+  },
+  "plugins": [
+    {
+      "name": "napkin",
+      "source": {
+        "source": "local",
+        "path": "./plugins/napkin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
