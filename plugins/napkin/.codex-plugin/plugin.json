@@ -1,6 +1,6 @@
 {
   "name": "napkin",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A Codex-native burn-rate and runway calculator with an editable spreadsheet.",
   "author": {
     "name": "Grant Mac"

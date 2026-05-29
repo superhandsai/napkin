@@ -1,12 +1,7 @@
 const sheet = document.querySelector("#sheet");
-const titleInput = document.querySelector("#titleInput");
 const statusEl = document.querySelector("#status");
 const formulaInput = document.querySelector("#formulaInput");
 const cellNameEl = document.querySelector("#cellName");
-const addRowButton = document.querySelector("#addRowButton");
-const addColumnButton = document.querySelector("#addColumnButton");
-const refreshButton = document.querySelector("#refreshButton");
-const scenarioSelect = document.querySelector("#scenarioSelect");
 const currentCashEl = document.querySelector("#currentCash");
 const averageBurnEl = document.querySelector("#averageBurn");
 const runwayMonthsEl = document.querySelector("#runwayMonths");
@@ -49,7 +44,7 @@ function normalizeWorkbook(nextWorkbook) {
 }
 
 function setStatus(text, kind = "") {
-  statusEl.textContent = text;
+  statusEl.textContent = kind === "error" ? text : "";
   statusEl.className = `status ${kind}`.trim();
 }
 
@@ -199,8 +194,6 @@ function commitCell(row, col, value) {
 }
 
 function render() {
-  titleInput.value = workbook.title;
-  syncScenarioControl();
   const headCells = Array.from({ length: workbook.cols }, (_, col) => `<th class="col-head">${columnName(col)}</th>`).join("");
   const bodyRows = Array.from({ length: workbook.rows }, (_, row) => {
     const cells = Array.from({ length: workbook.cols }, (_, col) => {
@@ -219,14 +212,6 @@ function render() {
   }).join("");
   sheet.innerHTML = `<thead><tr><th class="corner"></th>${headCells}</tr></thead><tbody>${bodyRows}</tbody>`;
   renderInsights();
-}
-
-function syncScenarioControl() {
-  const scenarioRow = findRow("Scenario");
-  const scenario = scenarioRow >= 0 ? workbook.cells[scenarioRow]?.[1] : "";
-  if (scenario && [...scenarioSelect.options].some((option) => option.value === scenario)) {
-    scenarioSelect.value = scenario;
-  }
 }
 
 function findRow(label) {
@@ -359,12 +344,11 @@ async function loadWorkbook({ quiet = false } = {}) {
   isDirty = false;
   render();
   selectCell(Math.min(selected.row, workbook.rows - 1), Math.min(selected.col, workbook.cols - 1));
-  if (!quiet) setStatus(`Loaded ${new Date().toLocaleTimeString()}`);
+  if (!quiet) setStatus("");
 }
 
 async function saveWorkbook() {
   if (!workbook || !isDirty) return;
-  workbook.title = titleInput.value.trim() || "Codex Calculation Sheet";
   setStatus("Saving");
   const response = await fetch(workbookApi, {
     method: "PUT",
@@ -376,7 +360,7 @@ async function saveWorkbook() {
   lastSavedAt = saved.updatedAt;
   workbook.updatedAt = saved.updatedAt;
   isDirty = false;
-  setStatus(`Saved ${new Date().toLocaleTimeString()}`);
+  setStatus("");
 }
 
 function queueSave() {
@@ -413,41 +397,6 @@ sheet.addEventListener("keydown", (event) => {
 
 formulaInput.addEventListener("change", () => {
   commitCell(selected.row, selected.col, formulaInput.value);
-});
-
-titleInput.addEventListener("input", () => {
-  workbook.title = titleInput.value;
-  isDirty = true;
-  queueSave();
-});
-
-scenarioSelect.addEventListener("change", () => {
-  const scenarioRow = findRow("Scenario");
-  if (scenarioRow >= 0 && workbook.cols > 1) {
-    commitCell(scenarioRow, 1, scenarioSelect.value);
-  }
-});
-
-addRowButton.addEventListener("click", () => {
-  workbook.rows += 1;
-  workbook.cells.push(Array.from({ length: workbook.cols }, () => ""));
-  isDirty = true;
-  render();
-  selectCell(workbook.rows - 1, 0);
-  queueSave();
-});
-
-addColumnButton.addEventListener("click", () => {
-  workbook.cols += 1;
-  workbook.cells.forEach((row) => row.push(""));
-  isDirty = true;
-  render();
-  selectCell(0, workbook.cols - 1);
-  queueSave();
-});
-
-refreshButton.addEventListener("click", () => {
-  loadWorkbook().catch((error) => setStatus(error.message, "error"));
 });
 
 window.setInterval(async () => {

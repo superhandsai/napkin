@@ -25,77 +25,29 @@ body {
   color: var(--ink);
 }
 
-button,
 input {
   font: inherit;
 }
 
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  min-height: 76px;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--line);
-  background: #14202a;
-  color: #f6fafc;
-}
-
-.title-input {
-  width: min(48vw, 520px);
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #f6fafc;
-  font-size: 22px;
-  font-weight: 650;
-}
-
 .status {
+  display: none;
+  position: fixed;
+  right: 12px;
+  bottom: 10px;
+  z-index: 10;
   min-height: 18px;
-  color: var(--muted);
-  color: #a9b8c5;
+  color: rgba(101, 114, 126, 0.78);
   font-size: 12px;
+  pointer-events: none;
 }
 
 .status.error {
+  display: block;
   color: var(--error);
 }
 
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.scenario-select {
-  height: 34px;
-  min-width: 148px;
-  border: 1px solid #40505d;
-  border-radius: 6px;
-  background: #1b2a35;
-  color: #f6fafc;
-  padding: 0 10px;
-}
-
-button {
-  height: 34px;
-  padding: 0 12px;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  background: var(--panel);
-  color: var(--ink);
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-}
-
 .workspace {
-  height: calc(100vh - 76px);
+  height: 100vh;
   display: grid;
   grid-template-rows: auto minmax(220px, 30vh) auto minmax(0, 1fr);
   gap: 10px;
@@ -319,22 +271,9 @@ button:hover {
     min-width: 360px;
   }
 
-  .topbar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .title-input {
-    width: 100%;
-  }
-
-  .actions {
-    flex-wrap: wrap;
-  }
-
   .workspace {
     height: auto;
-    min-height: calc(100vh - 76px);
+    min-height: 100vh;
     grid-template-rows: auto 260px auto minmax(320px, 1fr);
   }
 

@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 export const root = fileURLToPath(new URL("..", import.meta.url));
 export const dataDir = process.env.NAPKIN_DATA_DIR || join(homedir(), ".codex", "napkin");
-export const napkinVersion = "0.2.1";
+export const napkinVersion = "0.2.2";
 
 export const defaultWorkbook = {
   version: 1,
