@@ -1,0 +1,34 @@
+{
+  "name": "napkin",
+  "version": "0.1.0",
+  "description": "A Codex-native editable spreadsheet surface for thread-scoped calculations.",
+  "author": {
+    "name": "Grant Mac"
+  },
+  "license": "MIT",
+  "keywords": [
+    "spreadsheet",
+    "calculations",
+    "mcp",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Napkin",
+    "shortDescription": "Show Codex calculations in an editable sheet.",
+    "longDescription": "Napkin gives Codex a thread-scoped spreadsheet it can open in the in-app browser and read through MCP. It keeps lightweight calculations visible, treats user edits as the source of truth, and asks before changing edited cells.",
+    "developerName": "Grant Mac",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Open a Napkin sheet for this calculation.",
+      "Read my sheet edits and update the calculations.",
+      "Put this analysis into an editable spreadsheet."
+    ],
+    "brandColor": "#176B5D"
+  }
+}

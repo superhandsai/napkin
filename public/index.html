@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Napkin</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <input id="titleInput" class="title-input" aria-label="Workbook title">
+        <div id="status" class="status">Loading</div>
+      </div>
+      <div class="actions" aria-label="Workbook actions">
+        <button id="addRowButton" type="button">+ Row</button>
+        <button id="addColumnButton" type="button">+ Column</button>
+        <button id="refreshButton" type="button">Refresh</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="formula-strip" aria-label="Selected cell">
+        <span id="cellName" class="cell-name">A1</span>
+        <input id="formulaInput" class="formula-input" aria-label="Cell value">
+      </section>
+      <div class="sheet-wrap">
+        <table id="sheet" class="sheet" aria-label="Spreadsheet"></table>
+      </div>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "napkin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "check": "node --check server.mjs && node --check scripts/napkin-mcp.mjs && node --check scripts/workbook-store.mjs",
+    "mcp": "node scripts/napkin-mcp.mjs"
+  }
+}

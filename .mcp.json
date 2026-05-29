@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "napkin": {
+      "command": "node",
+      "args": [
+        "./scripts/napkin-mcp.mjs"
+      ],
+      "cwd": ".",
+      "note": "Local MCP server for the Napkin spreadsheet workbook and browser UI."
+    }
+  }
+}
