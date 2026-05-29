@@ -16,6 +16,20 @@ Use Napkin when a user asks Codex to do calculations and would benefit from seei
 5. After the user edits the sheet, call `napkin_get_workbook` before answering. Treat the workbook as the source of truth.
 6. Ask in chat before changing user-edited assumptions, formulas, or layout. Make changes only after the user confirms.
 
+## Fallback When MCP Tools Are Not Exposed
+
+If the Napkin skill is loaded but the `napkin_*` MCP tools are not available in the current host session, use the local CLI from the plugin root instead of stopping.
+
+The plugin root is the ancestor directory containing `.codex-plugin/plugin.json`. From that directory:
+
+```bash
+node scripts/napkin-cli.mjs open '{"workbookId":"current-thread"}'
+node scripts/napkin-cli.mjs replace '{"workbookId":"current-thread","title":"Quote","cells":[["Item","Amount"],["Total","100"]]}'
+node scripts/napkin-cli.mjs get '{"workbookId":"current-thread"}'
+```
+
+Use a stable workbook id for the current thread. If the host exposes a thread/session id in the environment, use that; otherwise derive a short id from the task. Open the returned URL in the Codex in-app browser.
+
 ## Workbook Shape
 
 Each Codex thread/session gets a separate workbook. Workbooks are stored under `~/.codex/napkin/workbooks/` and have this shape:

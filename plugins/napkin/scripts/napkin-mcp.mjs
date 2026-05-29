@@ -16,7 +16,7 @@ import {
   writeWorkbook
 } from "./workbook-store.mjs";
 
-const serverInfo = { name: "napkin", version: "0.1.1" };
+const serverInfo = { name: "napkin", version: "0.1.2" };
 const protocolVersion = "2025-06-18";
 const defaultPort = Number(process.env.NAPKIN_PORT || 4173);
 

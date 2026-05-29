@@ -52,11 +52,20 @@ codex mcp get napkin
 You should see `enabled: true` with a `cwd` inside the installed plugin cache. Then smoke-test the server:
 
 ```bash
-cd ~/.codex/plugins/cache/napkin-marketplace/napkin/0.1.1
+cd ~/.codex/plugins/cache/napkin-marketplace/napkin/0.1.2
 node -e 'const msg=JSON.stringify({jsonrpc:"2.0",id:1,method:"tools/list",params:{}}); process.stdout.write(`Content-Length: ${Buffer.byteLength(msg)}\r\n\r\n${msg}`)' | node scripts/napkin-mcp.mjs
 ```
 
 If that returns the `napkin_*` tools, the MCP server is healthy. Start a new Codex thread or restart the Codex app so the running conversation gets the newly installed MCP tools.
+
+If the skill loads but the MCP tools are still not exposed in a running session, use the CLI fallback from the installed plugin root:
+
+```bash
+cd ~/.codex/plugins/cache/napkin-marketplace/napkin/0.1.2
+node scripts/napkin-cli.mjs open '{"workbookId":"manual-test"}'
+node scripts/napkin-cli.mjs replace '{"workbookId":"manual-test","title":"Manual Test","cells":[["Item","Amount"],["Base","10"],["Double","=B2*2"]]}'
+node scripts/napkin-cli.mjs get '{"workbookId":"manual-test"}'
+```
 
 ## Plugin Files
 
