@@ -41,6 +41,23 @@ Then open `http://localhost:4173`.
 - `napkin_replace_workbook`: replaces the whole workbook.
 - `napkin_reset_workbook`: restores the sample workbook.
 
+## Troubleshooting
+
+If Codex says the Napkin skill is present but the MCP tools did not surface, first verify the server registration:
+
+```bash
+codex mcp get napkin
+```
+
+You should see `enabled: true` with a `cwd` inside the installed plugin cache. Then smoke-test the server:
+
+```bash
+cd ~/.codex/plugins/cache/napkin-marketplace/napkin/0.1.1
+node -e 'const msg=JSON.stringify({jsonrpc:"2.0",id:1,method:"tools/list",params:{}}); process.stdout.write(`Content-Length: ${Buffer.byteLength(msg)}\r\n\r\n${msg}`)' | node scripts/napkin-mcp.mjs
+```
+
+If that returns the `napkin_*` tools, the MCP server is healthy. Start a new Codex thread or restart the Codex app so the running conversation gets the newly installed MCP tools.
+
 ## Plugin Files
 
 - `.codex-plugin/plugin.json`: Codex plugin manifest.
